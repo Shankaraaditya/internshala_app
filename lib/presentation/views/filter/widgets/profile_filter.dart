@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:internshala_app/app/config/app_colors.dart';
 import 'package:internshala_app/presentation/controllers/filter/filter_controller.dart';
@@ -26,6 +27,7 @@ class _ProfileFilterViewState extends State<ProfileFilterView> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         leadingWidth: 30,
         leading: IconButton(
           icon: const Icon(
@@ -101,109 +103,117 @@ class _ProfileFilterViewState extends State<ProfileFilterView> {
           return title.toLowerCase().contains(_searchQuery.toLowerCase());
         }).toList();
 
-        return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    alignLabelWithHint: true,
-                    floatingLabelAlignment: FloatingLabelAlignment.start,
-                    labelText: "Search profile",
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColors.primaryColor),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(color: AppColors.primaryColor),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 22.0, vertical: 15),
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value;
-                    });
-                  },
-                ),
-              ),
-              if (_selectedInternships.isNotEmpty)
-                Container(
-                  height: 50,
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: _selectedInternships.map((title) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: Chip(
-                            label: Text(title,
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 15)),
-                            deleteIcon: const Icon(
-                              Icons.close,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            backgroundColor: const Color(0xff008de0),
-                            onDeleted: () {
-                              setState(() {
-                                _selectedInternships.remove(title);
-                              });
-                            },
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: filteredInternships.length,
-                  itemBuilder: (context, index) {
-                    final internship = filteredInternships[index];
-                    final title = filteredInternships[index];
-                    var isSelected = _selectedInternships.contains(title);
-                    bool isselected = false;
+        return AnimationLimiter(
+          child: AnimationConfiguration.synchronized(
 
-                    return ListTile(
-                      onTap: () {
-                        setState(() {
-                          if (isSelected) {
-                            _selectedInternships.remove(title);
-                          } else {
-                            _selectedInternships.add(title);
-                          }
-                        });
-                      },
-                      leading: Checkbox(
-                        activeColor: const Color(0xff008de0),
-                        value: isSelected,
+            child: FlipAnimation(
+              duration: Duration(seconds: 1),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          alignLabelWithHint: true,
+                          floatingLabelAlignment: FloatingLabelAlignment.start,
+                          labelText: "Search profile",
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: AppColors.primaryColor),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: AppColors.primaryColor),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 22.0, vertical: 15),
+                        ),
                         onChanged: (value) {
                           setState(() {
-                            if (value == true) {
-                              _selectedInternships.add(title);
-                            } else {
-                              _selectedInternships.remove(title);
-                            }
+                            _searchQuery = value;
                           });
                         },
                       ),
-                      title: Text(
-                        title ?? 'No Title',
+                    ),
+                    if (_selectedInternships.isNotEmpty)
+                      Container(
+                        height: 50,
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: _selectedInternships.map((title) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: Chip(
+                                  label: Text(title,
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 15)),
+                                  deleteIcon: const Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                  backgroundColor: const Color(0xff008de0),
+                                  onDeleted: () {
+                                    setState(() {
+                                      _selectedInternships.remove(title);
+                                    });
+                                  },
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
                       ),
-                    );
-                  },
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: filteredInternships.length,
+                        itemBuilder: (context, index) {
+                          final internship = filteredInternships[index];
+                          final title = filteredInternships[index];
+                          var isSelected = _selectedInternships.contains(title);
+                          bool isselected = false;
+              
+                          return ListTile(
+                            onTap: () {
+                              setState(() {
+                                if (isSelected) {
+                                  _selectedInternships.remove(title);
+                                } else {
+                                  _selectedInternships.add(title);
+                                }
+                              });
+                            },
+                            leading: Checkbox(
+                              activeColor: const Color(0xff008de0),
+                              value: isSelected,
+                              onChanged: (value) {
+                                setState(() {
+                                  if (value == true) {
+                                    _selectedInternships.add(title);
+                                  } else {
+                                    _selectedInternships.remove(title);
+                                  }
+                                });
+                              },
+                            ),
+                            title: Text(
+                              title ?? 'No Title',
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          );
+            ),
+          ),
+        );
       }),
     );
   }
